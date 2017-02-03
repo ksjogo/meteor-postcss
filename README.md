@@ -200,6 +200,7 @@ MIT
 
 ### Changelog
 
+- v1.2.1 Removed problematic app-module-path [#15](https://github.com/juliancwirko/meteor-postcss/issues/15)
 - v1.2.0 Updates (works quite well with Meteor 1.4.2)
 - v1.1.1 Removed `fs.existsSync` call because of [#18](https://github.com/juliancwirko/meteor-postcss/issues/18)
 - v1.1.0 Exclude Meteor package option [#14](https://github.com/juliancwirko/meteor-postcss/issues/14)

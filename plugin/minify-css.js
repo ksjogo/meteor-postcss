@@ -1,6 +1,3 @@
-var appModulePath = Npm.require('app-module-path');
-appModulePath.addPath(process.cwd() + '/node_modules/');
-
 var Future = Npm.require('fibers/future');
 var fs = Plugin.fs;
 var path = Plugin.path;
@@ -14,9 +11,10 @@ Plugin.registerMinifier({
     return minifier;
 });
 
-var PACKAGES_FILE = 'package.json';
+var PACKAGE_FILE = 'package.json';
 
-var packageFile = path.resolve(process.cwd(), PACKAGES_FILE);
+var packageFilePath = path.resolve(process.cwd(), PACKAGE_FILE);
+var appsNodeModulesPath = path.resolve(process.cwd(), 'node_modules');
 
 var loadJSONFile = function (filePath) {
     let content;
@@ -37,7 +35,7 @@ var postcssConfigPlugins;
 var postcssConfigParser;
 var postcssConfigExcludedPackages;
 
-var jsonContent = loadJSONFile(packageFile);
+var jsonContent = loadJSONFile(packageFilePath);
 
 if (typeof jsonContent === 'object') {
     postcssConfigPlugins = jsonContent.postcss && jsonContent.postcss.plugins;
@@ -49,7 +47,7 @@ var getPostCSSPlugins = function () {
     let plugins = [];
     if (postcssConfigPlugins) {
         Object.keys(postcssConfigPlugins).forEach(function (pluginName) {
-            let postCSSPlugin = Npm.require(pluginName);
+            let postCSSPlugin = Npm.require(appsNodeModulesPath + '/' + pluginName);
             if (postCSSPlugin && postCSSPlugin.name === 'creator' && postCSSPlugin().postcssPlugin) {
                 plugins.push(postCSSPlugin(postcssConfigPlugins ? postcssConfigPlugins[pluginName] : {}));
             }
@@ -61,7 +59,7 @@ var getPostCSSPlugins = function () {
 var getPostCSSParser = function () {
     let parser = null;
     if (postcssConfigParser) {
-        parser = Npm.require(postcssConfigParser);
+        parser = Npm.require(appsNodeModulesPath + '/' + postcssConfigParser + '/');
     }
     return parser;
 };
@@ -88,7 +86,7 @@ var isNotInExcludedPackages = function (excludedPackages, pathInBundle) {
 
 var isNotImport = function (inputFileUrl) {
     return !(/\.import\.css$/.test(inputFileUrl) ||
-             /(?:^|\/)imports\//.test(inputFileUrl));
+        /(?:^|\/)imports\//.test(inputFileUrl));
 };
 
 function CssToolsMinifier() {};
